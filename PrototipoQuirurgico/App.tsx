@@ -112,7 +112,7 @@ const navItems: { label: string; icon: IconName; path: string }[] = [
 ];
 
 function Logo({ compact = false }: { compact?: boolean }) {
-  return <div className="logo" onClick={() => navigate("/dashboard")} role="button" tabIndex={0}><span className="logo-mark"><Icon name="activity" size={22} /></span>{!compact && <span><strong>Quiró</strong><small>Gestión quirúrgica</small></span>}</div>;
+  return <div className="logo" onClick={() => navigate("/dashboard")} role="button" tabIndex={0}><span className="logo-mark"><Icon name="activity" size={22} /></span>{!compact && <span><strong>Rossi</strong><small>Gestión quirúrgica</small></span>}</div>;
 }
 
 function Sidebar({ open, close }: { open: boolean; close: () => void }) {
@@ -135,7 +135,6 @@ function Sidebar({ open, close }: { open: boolean; close: () => void }) {
           <div><strong>¿Necesitás ayuda?</strong><small>Centro de soporte</small></div>
           <Icon name="arrow" size={16} />
         </div>
-        <div className="hospital"><span className="hospital-logo">HS</span><div><strong>Hospital San Martín</strong><small>Red asistencial</small></div></div>
       </aside>
     </>
   );
@@ -244,7 +243,7 @@ function PatientLink({ name = "María González" }: { name?: string }) {
 }
 
 function Follow({ initials, name, room, time, tone }: { initials: string; name: string; room: string; time: string; tone: string }) {
-  return <div className="follow"><span className={`patient-avatar ${tone}`}>{initials}</span><div><strong>{name}</strong><small>{room} · Última evolución {time}</small></div><Button variant="soft" onClick={() => navigate("/cirugias/1/evolucion")}>Evolucionar</Button></div>;
+  return <div className="follow"><span className={`patient-avatar ${tone}`}>{initials}</span><div><strong>{name}</strong><small>{room} · Última evolución {time}</small></div><Button variant="soft" onClick={() => navigate("/cirugias/1/evolucion")}>Evolución</Button></div>;
 }
 
 function Filters({ wait = false }: { wait?: boolean }) {
@@ -292,7 +291,7 @@ function PatientDetail() {
     <Crumb items={["Pacientes", "María González"]} />
     <Card className="patient-hero">
       <div className="patient-main"><span className="large-avatar">MG</span><div><div className="patient-name">María González</div><div className="patient-meta"><span>DNI 28.456.789</span><span>42 años</span><span>Femenino</span><span>OSDE 210</span></div></div><Badge tone="info">En preparación</Badge></div>
-      <div className="header-actions"><Button variant="secondary">Editar paciente</Button><Button variant="secondary" onClick={() => navigate("/cirugias/nueva")}>Nueva cirugía</Button><Button onClick={() => navigate("/cirugias/nueva")}>Programar cirugía</Button></div>
+      <div className="header-actions"><Button variant="secondary">Editar paciente</Button><Button onClick={() => navigate("/cirugias/nueva")}>Programar cirugía</Button></div>
     </Card>
     <Tabs items={patientTabs} active={tab} onChange={setTab} />
     {tab === "Información personal" && <div className="detail-grid"><Card><SectionTitle title="Datos personales" /><DetailRows rows={[["Nombre completo", "María Elena González"], ["DNI", "28.456.789"], ["Fecha de nacimiento", "12 de marzo de 1983"], ["Género", "Femenino"], ["Localidad", "La Plata, Buenos Aires"]]} /></Card><Card><SectionTitle title="Contacto y cobertura" /><DetailRows rows={[["Teléfono", "+54 221 555-0184"], ["Email", "maria.gonzalez@email.com"], ["Contacto familiar", "Pablo González · +54 221 555-0162"], ["Obra social", "OSDE 210"], ["N.º afiliado", "28-456789-01"]]} /></Card></div>}
@@ -486,7 +485,7 @@ function EntityPage({ entity }: { entity: string }) {
 
 function Login() {
   const [error, setError] = useState(false);
-  return <div className="login-page"><div className="login-brand"><Logo /><div className="login-message"><span className="login-kicker">CUIDADO QUE CONECTA</span><div className="login-display">Cada decisión clínica,<br />más clara y a tiempo.</div><p>Una plataforma diseñada para acompañar a los equipos de salud en todo el circuito quirúrgico.</p><div className="login-stat"><span><strong>24</strong><small>Pacientes en espera</small></span><span><strong>8</strong><small>Cirugías hoy</small></span><span><strong>4</strong><small>Quirófanos activos</small></span></div></div><small className="login-footer">Hospital San Martín · Red asistencial</small></div><div className="login-form-wrap"><div className="login-form"><span className="mobile-logo"><Logo /></span><span className="eyebrow">BIENVENIDO</span><div className="login-title">Gestión Quirúrgica</div><p>Ingresá con tus credenciales institucionales.</p>{error && <div className="login-error">No pudimos iniciar sesión. Revisá tus datos e intentá nuevamente.</div>}<Input label="Email institucional" placeholder="nombre@hospital.ar" type="email" /><Input label="Contraseña" placeholder="Ingresá tu contraseña" type="password" /><div className="login-options"><Check label="Recordarme" /><span className="link">¿Olvidaste tu contraseña?</span></div><Button className="login-button" onClick={() => navigate("/dashboard")}>Ingresar <Icon name="arrow" /></Button><Button variant="ghost" className="error-demo" onClick={() => setError(!error)}>Ver estado de error</Button><small>Al ingresar aceptás las políticas de seguridad y privacidad institucional.</small></div></div></div>;
+  return <div className="login-page"><div className="login-brand"><Logo /><div className="login-message"><span className="login-kicker">CUIDADO QUE CONECTA</span><div className="login-display">Cada decisión clínica,<br />más clara y a tiempo.</div><p>Una plataforma diseñada para acompañar a los equipos de salud en todo el circuito quirúrgico.</p><div className="login-stat"><span><strong>24</strong><small>Pacientes en espera</small></span><span><strong>8</strong><small>Cirugías hoy</small></span><span><strong>4</strong><small>Quirófanos activos</small></span></div></div><small className="login-footer">Hospital Rossi · Red asistencial</small></div><div className="login-form-wrap"><div className="login-form"><span className="mobile-logo"><Logo /></span><span className="eyebrow">BIENVENIDO</span><div className="login-title">Gestión Quirúrgica</div><p>Ingresá con tus credenciales institucionales.</p>{error && <div className="login-error">No pudimos iniciar sesión. Revisá tus datos e intentá nuevamente.</div>}<Input label="Email institucional" placeholder="nombre@hospital.ar" type="email" /><Input label="Contraseña" placeholder="Ingresá tu contraseña" type="password" /><div className="login-options"><Check label="Recordarme" /><span className="link">¿Olvidaste tu contraseña?</span></div><Button className="login-button" onClick={() => navigate("/dashboard")}>Ingresar <Icon name="arrow" /></Button><Button variant="ghost" className="error-demo" onClick={() => setError(!error)}>Ver estado de error</Button><small>Al ingresar aceptás las políticas de seguridad y privacidad institucional.</small></div></div></div>;
 }
 
 function NotFound() {
