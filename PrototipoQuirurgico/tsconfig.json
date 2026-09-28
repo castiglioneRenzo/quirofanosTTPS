@@ -15,7 +15,9 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": { "@/*": ["./src/*"] }
   },
-  "include": ["main.tsx", "App.tsx", "vite-env.d.ts", "vite.config.ts"]
+  "include": ["main.tsx", "src", "vite-env.d.ts", "vite.config.ts"]
 }

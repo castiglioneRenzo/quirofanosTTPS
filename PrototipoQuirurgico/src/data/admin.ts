@@ -1,0 +1,5 @@
+import type { AdminOption } from "@/types";
+
+export const adminOptions: AdminOption[] = [["Usuarios", "Equipo, roles y permisos", "/administracion/usuarios", "users"], ["Asignaciones", "Bloques semanales de quirófanos", "/administracion/quirofanos/asignaciones", "calendar"], ["Obras sociales", "Coberturas médicas", "/administracion/obras-sociales", "clipboard"], ["Diagnósticos", "Catálogo de diagnósticos", "/administracion/diagnosticos", "activity"], ["Estudios", "Estudios prequirúrgicos", "/administracion/estudios", "heart"], ["Servicios", "Servicios hospitalarios", "/administracion/servicios", "grid"], ["Especialidades", "Especialidades médicas", "/administracion/especialidades", "user"], ["Grados de urgencia", "Prioridades quirúrgicas", "/administracion/urgencias", "clock"]];
+
+export const permissions = ["Lectura usuarios", "Escritura usuarios", "Lectura pacientes", "Escritura pacientes", "Lectura cirugías", "Escritura cirugías", "Lectura quirófanos", "Escritura quirófanos", "Lectura seguimientos", "Escritura seguimientos"];
