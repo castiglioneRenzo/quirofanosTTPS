@@ -19,7 +19,9 @@ type IconName =
   | "sparkles"
   | "close"
   | "check"
-  | "user";
+  | "user"
+  | "edit"
+  | "trash";
 
 const iconPaths: Record<IconName, React.ReactNode> = {
   grid: <><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></>,
@@ -41,6 +43,8 @@ const iconPaths: Record<IconName, React.ReactNode> = {
   close: <><path d="M6 6l12 12M18 6 6 18" /></>,
   check: <><path d="m5 12 4 4L19 6" /></>,
   user: <><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></>,
+  edit: <><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" /></>,
+  trash: <><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6" /></>,
 };
 
 function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
@@ -51,10 +55,11 @@ function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
   );
 }
 
-function Button({ children, variant = "primary", icon, onClick, className = "", type = "button" }: {
-  children: React.ReactNode; variant?: "primary" | "secondary" | "ghost" | "soft"; icon?: IconName; onClick?: () => void; className?: string; type?: "button" | "submit";
+function Button({ children, variant = "primary", icon, onClick, className = "", type = "button", iconOnly = false, title }: {
+  children?: React.ReactNode; variant?: "primary" | "secondary" | "ghost" | "soft" | "danger"; icon?: IconName; onClick?: () => void; className?: string; type?: "button" | "submit"; iconOnly?: boolean; title?: string;
 }) {
-  return React.createElement("button", { className: `btn btn-${variant} ${className}`, onClick, type }, icon && <Icon name={icon} />, <span>{children}</span>);
+  if (iconOnly) return React.createElement("button", { className: `btn btn-${variant} btn-icon ${className}`, onClick, type, title, "aria-label": title }, <Icon name={icon as IconName} />);
+  return React.createElement("button", { className: `btn btn-${variant} ${className}`, onClick, type, title }, icon && <Icon name={icon} />, <span>{children}</span>);
 }
 
 function Input({ placeholder, label, type = "text", value, onChange }: { placeholder?: string; label?: string; type?: string; value?: string; onChange?: (v: string) => void }) {
@@ -336,36 +341,47 @@ function SurgeryHistory({ embedded = false }: { embedded?: boolean }) {
 }
 
 function SurgeriesPage() {
-  return <><Crumb items={["Cirugías"]} /><PageHeader title="Cirugías" subtitle="Consultá y gestioná las atenciones quirúrgicas." actions={<Button icon="plus" onClick={() => navigate("/cirugias/nueva")}>Nueva cirugía</Button>} /><Filters /><Card><SectionTitle title="Cirugías programadas" /><Table headers={["Fecha", "Paciente", "Procedimiento", "Servicio", "Cirujano", "Quirófano", "Estado", ""]} rows={patients.slice(0, 4).map((p, i) => [`${30 + i}/09 · ${8 + i * 2}:00`, <PatientLink name={p.name} />, ["Colecistectomía laparoscópica", "Artroscopia", "Histerectomía", "Ureteroscopía"][i], p.service, i % 2 ? "Dra. Lucía Ruiz" : "Dr. Martín Pérez", `Q${i + 1}`, <Badge tone={i === 0 ? "success" : "info"}>{i === 0 ? "Confirmada" : "Programada"}</Badge>, <Button variant="ghost" onClick={() => navigate("/cirugias/1")}>Ver detalle</Button>])} /></Card></>;
+  const [toDelete, setToDelete] = useState<number | null>(null);
+  return <>
+    <Crumb items={["Cirugías"]} />
+    <PageHeader title="Cirugías" subtitle="Consultá y gestioná las atenciones quirúrgicas." actions={<Button icon="plus" onClick={() => navigate("/cirugias/nueva")}>Nueva cirugía</Button>} />
+    <Filters />
+    <Card><SectionTitle title="Cirugías programadas" /><Table headers={["Fecha", "Paciente", "Procedimiento", "Servicio", "Cirujano", "Quirófano", "Estado", ""]} rows={patients.slice(0, 4).map((p, i) => [`${30 + i}/09 · ${8 + i * 2}:00`, <PatientLink name={p.name} />, ["Colecistectomía laparoscópica", "Artroscopia", "Histerectomía", "Ureteroscopía"][i], p.service, i % 2 ? "Dra. Lucía Ruiz" : "Dr. Martín Pérez", `Q${i + 1}`, <Badge tone={i === 0 ? "success" : "info"}>{i === 0 ? "Confirmada" : "Programada"}</Badge>, <div className="row-actions"><Button variant="ghost" onClick={() => navigate("/cirugias/1")}>Ver detalle</Button><Button variant="ghost" iconOnly icon="edit" title="Editar" onClick={() => navigate("/cirugias/1/editar")} /><Button variant="ghost" iconOnly icon="trash" title="Eliminar" className="btn-danger-ghost" onClick={() => setToDelete(i)} /></div>])} /></Card>
+    {toDelete !== null && <Modal title="¿Eliminar cirugía?" onClose={() => setToDelete(null)}><p>Esta acción quitará la cirugía seleccionada del listado. Podés confirmarla o cancelar.</p><div className="modal-actions"><Button variant="secondary" onClick={() => setToDelete(null)}>Cancelar</Button><Button variant="danger" icon="trash" onClick={() => { setToDelete(null); navigate("/cirugias"); }}>Eliminar</Button></div></Modal>}
+  </>;
 }
 
 function SurgeryDetail() {
   const [tab, setTab] = useState("Resumen");
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const tabs = ["Resumen", "Prequirúrgicos", "Programación", "Evolución", "Epicrisis", "Seguimiento ambulatorio"];
   return <>
     <Crumb items={["Cirugías", "Colecistectomía laparoscópica"]} />
-    <div className="surgery-header"><div><Badge tone="success">Confirmada</Badge><PageHeader title="Colecistectomía laparoscópica" subtitle="María González · DNI 28.456.789" /></div><div className="header-actions"><Button variant="secondary" onClick={() => navigate("/cirugias/1/evolucion")}>Ver evolución</Button><Button onClick={() => navigate("/cirugias/1/alta")}>Registrar alta</Button></div></div>
+    <div className="surgery-header"><div><Badge tone="success">Confirmada</Badge><PageHeader title="Colecistectomía laparoscópica" subtitle="María González · DNI 28.456.789" /></div><div className="header-actions"><Button variant="secondary" onClick={() => navigate("/cirugias/1/evolucion")}>Ver evolución</Button><Button variant="secondary" icon="edit" onClick={() => navigate("/cirugias/1/editar")}>Editar</Button><Button variant="danger" icon="trash" onClick={() => setConfirmDelete(true)}>Eliminar</Button><Button onClick={() => navigate("/cirugias/1/alta")}>Registrar alta</Button></div></div>
     <div className="mini-stats"><div><span>Fecha y hora</span><strong>30 sep · 08:00</strong></div><div><span>Quirófano</span><strong>Quirófano 1</strong></div><div><span>Servicio</span><strong>Cirugía General</strong></div><div><span>Cirujano</span><strong>Dr. Martín Pérez</strong></div></div>
     <Tabs items={tabs} active={tab} onChange={(x) => { setTab(x); if (x === "Evolución") navigate("/cirugias/1/evolucion"); if (x === "Epicrisis") navigate("/cirugias/1/epicrisis"); }} />
     {tab === "Resumen" && <div className="detail-grid"><Card><SectionTitle title="Información clínica" /><DetailRows rows={[["Diagnóstico", "Colelitiasis sintomática"], ["Procedimiento", "Colecistectomía laparoscópica"], ["Tipo de cirugía", "Con internación"], ["Riesgo quirúrgico", "ASA II"], ["Prioridad", "Alta"]]} /></Card><Card><SectionTitle title="Equipo quirúrgico" /><DetailRows rows={[["Cirujano principal", "Dr. Martín Pérez"], ["Ayudante", "Dra. Lucía Ruiz"], ["Anestesiólogo", "Dr. Pablo Romero"], ["Instrumentador", "Marcos Díaz"]]} /></Card></div>}
     {tab === "Prequirúrgicos" && <Preop embedded />}
     {tab === "Programación" && <Card><SectionTitle title="Programación" /><DetailRows rows={[["Quirófano", "Quirófano 1"], ["Fecha", "30 de septiembre de 2025"], ["Horario", "08:00 – 10:00"], ["Duración estimada", "2 horas"], ["Estado", "Confirmada"]]} /></Card>}
     {tab === "Seguimiento ambulatorio" && <Ambulatory embedded />}
+    {confirmDelete && <Modal title="¿Eliminar cirugía?" onClose={() => setConfirmDelete(false)}><p>Esta acción quitará la cirugía seleccionada del listado. Podés confirmarla o cancelar.</p><div className="modal-actions"><Button variant="secondary" onClick={() => setConfirmDelete(false)}>Cancelar</Button><Button variant="danger" icon="trash" onClick={() => { setConfirmDelete(false); navigate("/cirugias"); }}>Eliminar</Button></div></Modal>}
   </>;
 }
 
-function Wizard() {
+function Wizard({ edit = false }: { edit?: boolean }) {
   const [step, setStep] = useState(1);
+  const [calendarModal, setCalendarModal] = useState(false);
   const labels = ["Paciente", "Procedimiento", "Prequirúrgicos", "Programación", "Confirmación"];
-  return <><Crumb items={["Cirugías", "Nueva cirugía"]} /><PageHeader title="Programar nueva cirugía" subtitle="Completá los pasos para crear una nueva programación." /><div className="stepper">{labels.map((l, i) => <div className={`step ${step >= i + 1 ? "active" : ""}`} key={l}><span>{step > i + 1 ? <Icon name="check" size={15} /> : i + 1}</span><small>{l}</small></div>)}</div>
+  return <><Crumb items={["Cirugías", edit ? "Editar cirugía" : "Nueva cirugía"]} /><PageHeader title={edit ? "Editar cirugía" : "Programar nueva cirugía"} subtitle={edit ? "Modificá los datos de la programación seleccionada." : "Completá los pasos para crear una nueva programación."} /><div className="stepper">{labels.map((l, i) => <div className={`step ${step >= i + 1 ? "active" : ""}`} key={l}><span>{step > i + 1 ? <Icon name="check" size={15} /> : i + 1}</span><small>{l}</small></div>)}</div>
     <Card className="wizard-card">
       {step === 1 && <><SectionTitle title="Seleccionar paciente" subtitle="Buscá por nombre, apellido o DNI." /><div className="search-large"><Icon name="search" /><Input placeholder="Buscar paciente..." /></div><div className="selected-patient"><span className="patient-avatar blue">MG</span><div><strong>María González</strong><small>DNI 28.456.789 · 42 años · OSDE</small></div><Badge tone="success">Seleccionada</Badge></div></>}
       {step === 2 && <><SectionTitle title="Datos del procedimiento" /><div className="form-grid"><Input label="Procedimiento" value="Colecistectomía laparoscópica" /><Select label="Servicio"><option>Cirugía General</option></Select><Select label="Cirujano"><option>Dr. Martín Pérez</option></Select><Select label="Tipo de cirugía"><option>Con internación</option><option>Ambulatoria</option></Select></div></>}
       {step === 3 && <><SectionTitle title="Verificación prequirúrgica" /><div className="readiness compact"><div className="readiness-icon"><Icon name="check" /></div><div><div className="section-heading">Estudios completos</div><p>4 de 4 estudios requeridos fueron validados.</p></div><Button variant="secondary" onClick={() => navigate("/pacientes/1/prequirurgicos")}>Ver detalle</Button></div></>}
       {step === 4 && <><SectionTitle title="Fecha y quirófano" /><div className="form-grid"><Input label="Fecha" type="date" /><Select label="Quirófano"><option>Quirófano 1</option><option>Quirófano 2</option></Select><Select label="Horario"><option>08:00 – 10:00</option><option>12:00 – 14:00</option></Select></div></>}
       {step === 5 && <><SectionTitle title="Revisar y confirmar" /><div className="summary-box"><DetailRows rows={[["Paciente", "María González"], ["Procedimiento", "Colecistectomía laparoscópica"], ["Cirujano", "Dr. Martín Pérez"], ["Fecha", "30/09/2025 · 08:00"], ["Quirófano", "Quirófano 1"]]} /></div></>}
-      <div className="wizard-actions"><Button variant="secondary" onClick={() => step === 1 ? navigate("/cirugias") : setStep(step - 1)}>{step === 1 ? "Cancelar" : "Volver"}</Button><Button onClick={() => step === 5 ? navigate("/cirugias/1") : setStep(step + 1)}>{step === 5 ? "Confirmar programación" : "Continuar"}</Button></div>
+      <div className="wizard-actions"><Button variant="secondary" onClick={() => step === 1 ? (edit ? navigate("/cirugias/1") : navigate("/cirugias")) : setStep(step - 1)}>{step === 1 ? "Cancelar" : "Volver"}</Button><Button onClick={() => step === 5 ? (edit ? navigate("/cirugias/1") : setCalendarModal(true)) : setStep(step + 1)}>{step === 5 ? (edit ? "Guardar cambios" : "Confirmar programación") : "Continuar"}</Button></div>
     </Card>
+    {calendarModal && <CalendarModal onClose={() => setCalendarModal(false)} onDone={() => { setCalendarModal(false); navigate("/cirugias/1"); }} />}
   </>;
 }
 
@@ -382,6 +398,7 @@ function OperatingRooms() {
 const times = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"];
 function Schedule({ reserve = false }: { reserve?: boolean }) {
   const [modal, setModal] = useState(false);
+  const [calendar, setCalendar] = useState(false);
   const [selected, setSelected] = useState("");
   return <><Crumb items={["Quirófanos", reserve ? "Nueva reserva" : "Cronograma"]} /><PageHeader title={reserve ? "Reservar quirófano" : "Cronograma quirúrgico"} subtitle={reserve ? "Seleccioná paciente, sala y franja horaria." : "Agenda semanal del 30 de septiembre al 4 de octubre."} actions={!reserve ? <><Button variant="secondary">Día</Button><Button variant="soft">Semana</Button><Button icon="plus" onClick={() => navigate("/quirofanos/reservar")}>Nueva reserva</Button></> : undefined} />
     {!reserve && <div className="schedule-metrics"><span><i className="dot blue" />3 quirófanos ocupados</span><span><i className="dot green" />8 cirugías programadas</span><span><i className="dot amber" />2 pendientes de confirmar</span><Badge tone="warning">Cierre de agenda mañana · 18:00</Badge></div>}
@@ -391,12 +408,25 @@ function Schedule({ reserve = false }: { reserve?: boolean }) {
       return <div key={day} className={`calendar-cell ${occupied ? "occupied" : "available"} ${selected === `${day}-${row}` ? "selected" : ""}`} onClick={() => !occupied && setSelected(`${day}-${row}`)} role="button" tabIndex={0}>{occupied && <><strong>{row % 2 ? "Artroscopia" : "Colecistectomía"}</strong><small>{row % 2 ? "C. Fernández · Q2" : "M. González · Q1"}</small></>}{!occupied && reserve && <small>Disponible</small>}</div>;
     })}</div>)}</Card>
     {reserve && <Card className="reservation-summary"><div><span className="eyebrow">RESUMEN DE RESERVA</span><div className="section-heading">{selected ? "Lunes 30 · 11:00–13:00" : "Seleccioná una franja disponible"}</div><p>Quirófano 1 · María González · Dr. Martín Pérez</p><Check label="Agregar a mi calendario" /></div><div className="header-actions"><Button variant="secondary" onClick={() => navigate("/quirofanos/cronograma")}>Cancelar</Button><Button onClick={() => setModal(true)}>Confirmar reserva</Button></div></Card>}
-    {modal && <Modal title="¿Desea confirmar esta reserva?" onClose={() => setModal(false)}><p>Se reservará el Quirófano 1 el lunes 30 de septiembre de 11:00 a 13:00.</p><div className="modal-actions"><Button variant="secondary" onClick={() => setModal(false)}>Cancelar</Button><Button onClick={() => { setModal(false); navigate("/quirofanos/cronograma"); }}>Confirmar</Button></div></Modal>}
+    {modal && <Modal title="¿Desea confirmar esta reserva?" onClose={() => setModal(false)}><p>Se reservará el Quirófano 1 el lunes 30 de septiembre de 11:00 a 13:00.</p><div className="modal-actions"><Button variant="secondary" onClick={() => setModal(false)}>Cancelar</Button><Button onClick={() => { setModal(false); setCalendar(true); }}>Confirmar</Button></div></Modal>}
+    {calendar && <CalendarModal onClose={() => setCalendar(false)} onDone={() => { setCalendar(false); navigate("/quirofanos/cronograma"); }} />}
   </>;
 }
 
 function Modal({ title, children, onClose }: { title: string; children: React.ReactNode; onClose: () => void }) {
   return <div className="modal-backdrop"><div className="modal"><div className="modal-header"><div className="section-heading">{title}</div><div className="icon-button" onClick={onClose}><Icon name="close" /></div></div>{children}</div></div>;
+}
+
+function CalendarModal({ onClose, onDone }: { onClose: () => void; onDone: () => void }) {
+  return <Modal title="Agregar al calendario" onClose={onClose}>
+    <span className="eyebrow">CIRUGÍA PROGRAMADA</span>
+    <div className="section-heading">Colecistectomía laparoscópica · 30/09 · 08:00 – 10:00</div>
+    <p>Agregá el evento al calendario personal del cirujano a cargo.</p>
+    <div className="selected-patient"><span className="patient-avatar">MP</span><div><strong>Dr. Martín Pérez</strong><small>martin.perez@hospital.ar</small></div><Badge tone="info">Cuenta asociada</Badge></div>
+    <div className="calendar-providers"><Button variant="secondary" icon="calendar">Google Calendar</Button><Button variant="secondary" icon="calendar">Apple Calendar</Button></div>
+    <small className="demo-note">Demo: la integración con calendarios estará disponible en una próxima versión.</small>
+    <div className="modal-actions"><Button onClick={onDone}>Listo</Button></div>
+  </Modal>;
 }
 
 function Admitted() {
@@ -503,6 +533,7 @@ function RouteContent({ path }: { path: string }) {
   if (/^\/pacientes\/\d+$/.test(path)) return <PatientDetail />;
   if (path === "/cirugias") return <SurgeriesPage />;
   if (path === "/cirugias/nueva") return <Wizard />;
+  if (/^\/cirugias\/\d+\/editar$/.test(path)) return <Wizard edit />;
   if (/^\/cirugias\/\d+\/evolucion$/.test(path)) return <Evolution />;
   if (/^\/cirugias\/\d+\/alta$/.test(path)) return <Discharge />;
   if (/^\/cirugias\/\d+\/epicrisis$/.test(path)) return <Epicrisis />;

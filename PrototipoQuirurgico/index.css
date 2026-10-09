@@ -91,6 +91,12 @@ kbd { font: inherit; font-size: 10px; border: 1px solid var(--line); background:
 .btn-secondary:hover { border-color: #b9cbd3; background: var(--bg); }
 .btn-ghost { color: var(--primary-dark); background: transparent; padding-left: 8px; padding-right: 8px; }
 .btn-soft { color: var(--primary-dark); background: var(--primary-soft); }
+.btn-danger { color: white; background: var(--red); box-shadow: 0 2px 5px rgba(184,102,98,.16); }
+.btn-danger:hover { background: #a4564f; }
+.btn-danger-ghost { color: var(--red); }
+.btn-danger-ghost:hover { background: var(--red-bg); }
+.btn-icon { min-width: 36px; padding: 0; }
+.row-actions { display: flex; align-items: center; gap: 2px; }
 .mobile-menu { display: none; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); padding: 20px; box-sizing: border-box; }
 .stats-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin-bottom: 28px; }
@@ -221,6 +227,8 @@ tbody tr:hover { background: #fbfdfe; }
 .modal-backdrop { position: fixed; inset: 0; background: rgba(25,45,55,.38); display: grid; place-items: center; padding: 20px; z-index: 100; }
 .modal { background: var(--surface); width: min(530px, 100%); border-radius: 11px; box-shadow: 0 25px 80px rgba(25,45,55,.25); padding: 22px; }
 .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }.modal p { color: var(--ink-soft); font-size: 11px; line-height: 1.6; }.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+.calendar-providers { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+.demo-note { display: block; color: var(--ink-soft); font-size: 9px; margin-top: 10px; }
 .timeline { margin-top: 10px; }.timeline-entry { display: grid; grid-template-columns: 35px 1fr; position: relative; }
 .timeline-entry:not(:last-child):before { content: ""; position: absolute; left: 15px; top: 31px; bottom: -5px; width: 1px; background: var(--line); }
 .timeline-marker span { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; background: var(--primary-soft); color: var(--primary); }
