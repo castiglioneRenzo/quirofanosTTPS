@@ -1,0 +1,166 @@
+@startuml Diagrama
+title Hospital Rossi
+hide empty members
+
+class Usuario {
+    -email: String
+    -password: String
+    -nombre: String
+    -apellido: String
+    -servicio: Servicio
+    -especialidad: EspecialidadMedica
+    -cargo: CargoMedico
+    -activo: Boolean
+    -permisos: Permiso*
+}
+
+enum constants.EspecialidadMedica {
+    **Catálogo de especialidades**
+}
+
+enum constants.Servicio {
+    **Catálogo de servicios**
+}
+
+enum constants.CargoMedico {
+    R1
+    R2
+    R3
+    R4
+    Cirjuano
+    Administrativo
+    Jefe
+}
+
+enum constants.Permiso {
+    **Tabla de permisos**
+}
+
+class Paciente {
+    -nombre: String
+    -apellido: String
+    -fechaNacimiento: Date
+    -dni: Integer
+    -genero: Genero
+    -obraSocial: ObraSocial
+    -numeroObraSocial: Integer
+    -nombreContacto: String
+    -telefonoContacto: String
+    -email: String
+    -localidad: String
+}
+
+enum constants.Genero {
+    MASCULINO
+    FEMENINO
+    OTRO
+}
+
+class ObraSocial {
+    -nombre: String
+    -description: String
+    -activo: Boolean
+    -modificadoEn: Date
+}
+
+class Ingreso {
+    -paciente: Paciente
+    -fechaIngreso: Date
+    -servicio: Servicio
+    -prioridad: NivelPrioridad
+    -diagnostico: Diagnostico
+    -descripción: String
+    -cirugia: Cirugia
+    -nivelRiesgo: Integer
+    -antecedentes: String
+    -medicación: String
+    -comentarios: String
+}
+
+enum constants.Diagnostico {
+    **Catálogo de diagnósticos**
+}
+
+class Estudio {
+    -completo: Boolean
+}
+
+class Cirugia {
+    -reserva: Reserva
+    ' -fechaHora: DateTime
+    -paciente: Paciente
+    -procedimiento: Procedimiento
+    ' -servicio: Servicio
+    -tipo: TipoCirugia
+    -cirujano: Usuario
+    -estudiosPreQuirurgicos: Estudio*
+    ' -quirofano: Quirofano
+    -estado: EstadoCirugia
+    -epicrisis: String
+    -evolucion: Seguimiento
+}
+
+enum constants.EstadoCirugia {
+    PROGRAMADA
+    PENDIENTE
+    FINALIZADA
+}
+
+class Quirofano {
+    -nombre: String
+    -servicio: Servicio
+    -reservado: Boolean
+    -tipo: TipoQuirofano
+    -especialidad: [DiaDeSemana, RangoHorario, Especialidad]*
+}
+
+class Reserva {
+    -fechaHoraInicio: DateTime
+    -fechaHoraFin: DateTime
+    '- cirugia: Cirugia
+    -quirofano: Quirofano
+    -estado: EstadoReserva
+}
+
+enum constants.EstadoReserva {
+    PENDIENTE
+    EN_CURSO
+    REALIZADA
+    CANCELADA
+}
+
+enum constants.TipoQuirofano {
+    LOCAL
+    GENERAL
+}
+
+enum constants.TipoCirugia {
+    HOSPITALIZACION
+    AMBULATORIO
+}
+
+enum constants.NivelPrioridad {
+    CRITICO
+    ALTO
+    MEDIO
+    BAJO
+}
+
+class Seguimiento {
+    -habitacion: String
+    -cirujano: Usuario
+    -tratamiento: String
+    -evolucion: String
+}
+
+Paciente --* ObraSocial
+Ingreso --* Paciente
+Ingreso --* Cirugia
+Ingreso --* Usuario
+Cirugia --* Estudio
+Cirugia --* Usuario
+Cirugia --o Seguimiento
+Reserva o-- Cirugia
+Reserva --* Quirofano
+
+@enduml
