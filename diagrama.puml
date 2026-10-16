@@ -170,17 +170,17 @@ class Epicrisis {
     -fecha: Date
 }
 
-Paciente --* ObraSocial
-Ingreso --* Paciente
-Ingreso --* Cirugia
-Ingreso --* Usuario
-Cirugia --* Prequirurgico
-Estudio --* Prequirurgico
-Cirugia --* Usuario
-Cirugia --* SeguimientoAmbulatorio
-Cirugia --o Seguimiento
-Cirugia --o Epicrisis
-Reserva o-- Cirugia
-Reserva --* Quirofano
+Paciente "0..*" -- "1" ObraSocial
+Ingreso "1..*" -- "1" Paciente
+Ingreso "1" -- "0..*" Cirugia
+Ingreso "0..*" -- "1" Usuario
+Cirugia "1" *-- "0..*" Prequirurgico
+Estudio "1..*" -- "0..*" Prequirurgico
+Cirugia "1" -- "1" Usuario
+Cirugia "1" *-- "0..*" SeguimientoAmbulatorio
+Cirugia "1" o-- "0..*" Seguimiento
+Cirugia "1" o-- "0..1" Epicrisis
+Reserva "0..1" -- "1" Cirugia
+Reserva "0..*" -- "1" Quirofano
 
 @enduml
