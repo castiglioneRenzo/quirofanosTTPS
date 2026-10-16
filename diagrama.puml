@@ -82,22 +82,27 @@ enum constants.Diagnostico {
 }
 
 class Estudio {
-    -completo: Boolean
+    -descripcion: String
+}
+
+class Prequirurgico {
+    ' -estudio: Estudio
+    -completado: Boolean
 }
 
 class Cirugia {
     -reserva: Reserva
-    ' -fechaHora: DateTime
     -paciente: Paciente
     -procedimiento: Procedimiento
     ' -servicio: Servicio
     -tipo: TipoCirugia
     -cirujano: Usuario
-    -estudiosPreQuirurgicos: Estudio*
-    ' -quirofano: Quirofano
+    -prequirurgicos: Prequirurgico
+    -tipoAnestesia: TipoAnestesia
     -estado: EstadoCirugia
-    -epicrisis: String
+    -epicrisis: Epicrisis
     -evolucion: Seguimiento
+    -seguimientoAmbulatorio: SeguimientoAmbulatorio
 }
 
 enum constants.EstadoCirugia {
@@ -110,7 +115,7 @@ class Quirofano {
     -nombre: String
     -servicio: Servicio
     -reservado: Boolean
-    -tipo: TipoQuirofano
+    -tipo: TipoAnestesia
     -especialidad: [DiaDeSemana, RangoHorario, Especialidad]*
 }
 
@@ -129,7 +134,7 @@ enum constants.EstadoReserva {
     CANCELADA
 }
 
-enum constants.TipoQuirofano {
+enum constants.TipoAnestesia {
     LOCAL
     GENERAL
 }
@@ -147,19 +152,35 @@ enum constants.NivelPrioridad {
 }
 
 class Seguimiento {
+    -fecha: Date
     -habitacion: String
     -cirujano: Usuario
     -tratamiento: String
     -evolucion: String
 }
 
+class SeguimientoAmbulatorio {
+    -fecha: Date
+    -medico: Usuario
+    -tratamiento: String
+    -comentario: String
+}
+
+class Epicrisis {
+    -archivo: String
+    -fecha: Date
+}
+
 Paciente --* ObraSocial
 Ingreso --* Paciente
 Ingreso --* Cirugia
 Ingreso --* Usuario
-Cirugia --* Estudio
+Cirugia --* Prequirurgico
+Estudio --* Prequirurgico
 Cirugia --* Usuario
+Cirugia --* SeguimientoAmbulatorio
 Cirugia --o Seguimiento
+Cirugia --o Epicrisis
 Reserva o-- Cirugia
 Reserva --* Quirofano
 
