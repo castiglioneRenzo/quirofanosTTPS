@@ -27,7 +27,7 @@ enum constants.CargoMedico {
     R2
     R3
     R4
-    Cirjuano
+    Cirujano
     Administrativo
     Jefe
 }
@@ -93,7 +93,7 @@ class Prequirurgico {
 class Cirugia {
     -reserva: Reserva
     -paciente: Paciente
-    -procedimiento: Procedimiento
+    -procedimiento: String
     ' -servicio: Servicio
     -tipo: TipoCirugia
     -cirujano: Usuario
@@ -122,7 +122,6 @@ class Quirofano {
 class Reserva {
     -fechaHoraInicio: DateTime
     -fechaHoraFin: DateTime
-    '- cirugia: Cirugia
     -quirofano: Quirofano
     -estado: EstadoReserva
 }
