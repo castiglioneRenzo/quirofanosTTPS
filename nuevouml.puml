@@ -1,0 +1,315 @@
+@startuml nuevouml
+title Modelo de entidades de persistencia - Sistema de Gestión Quirúrgica Hospital Rossi
+hide empty members
+
+' ============ Usuarios y administración ============
+
+class Usuario {
+    -id: Long
+    -email: String
+    -password: String
+    -apellido: String
+    -nombres: String
+    -cargo: Cargo
+    -activo: Boolean
+}
+
+class Servicio {
+    -id: Long
+    -nombre: String
+    -descripcion: String
+    -activo: Boolean
+}
+
+class Especialidad {
+    -id: Long
+    -nombre: String
+    -descripcion: String
+    -activo: Boolean
+}
+
+enum constants.Cargo {
+    R1
+    R2
+    R3
+    R4
+    CIRUJANO
+    JEFE
+    ADMINISTRATIVO
+}
+
+enum constants.Permiso {
+    LECTURA_USUARIOS
+    ESCRITURA_USUARIOS
+    LECTURA_PACIENTES
+    ESCRITURA_PACIENTES
+    LECTURA_CIRUGIAS
+    ESCRITURA_CIRUGIAS
+    LECTURA_QUIROFANOS
+    ESCRITURA_QUIROFANOS
+    LECTURA_SEGUIMIENTOS
+    ESCRITURA_SEGUIMIENTOS
+}
+
+' ============ Catálogos clínicos ============
+
+class ObraSocial {
+    -id: Long
+    -nombre: String
+    -descripcion: String
+    -activo: Boolean
+    -modificadoEn: Date
+}
+
+class Diagnostico {
+    -id: Long
+    -nombre: String
+    -descripcion: String
+    -activo: Boolean
+}
+
+class Estudio {
+    -id: Long
+    -nombre: String
+    -descripcion: String
+    -activo: Boolean
+}
+
+class GradoUrgencia {
+    -id: Long
+    -nombre: String
+    -descripcion: String
+    -activo: Boolean
+}
+
+' ============ Pacientes ============
+
+class Paciente {
+    -id: Long
+    -apellido: String
+    -nombres: String
+    -dni: String
+    -genero: Genero
+    -fechaNacimiento: Date
+    -edad: Integer {derived}
+    -localidad: String
+    -telefono: String
+    -email: String
+    -numeroAfiliado: String
+    -antecedentesPatologicos: String
+    -medicacionHabitual: String
+    -comentarios: String
+}
+
+enum constants.Genero {
+    MASCULINO
+    FEMENINO
+    OTRO
+}
+
+' ============ Lista de espera quirúrgica ============
+
+class Ingreso {
+    -id: Long
+    -fechaRegistro: Date
+    -descripcion: String
+    -contacto: String
+    -comentarios: String
+    -riesgoQuirurgico: RiesgoQuirurgico
+}
+
+enum constants.RiesgoQuirurgico {
+    I
+    II
+    III
+    IV
+    V
+    VI
+}
+
+' ============ Quirófanos ============
+
+class Quirofano {
+    -id: Long
+    -nombre: String
+    -tipo: TipoAnestesia
+    -esDeEmergencias: Boolean
+    -activo: Boolean
+}
+
+class AsignacionQuirofano {
+    -id: Long
+    -dia: DiaSemana
+    -horaInicio: Time
+    -horaFin: Time
+}
+
+class Reserva {
+    -id: Long
+    -fechaHoraInicio: DateTime
+    -fechaHoraFin: DateTime
+    -estado: EstadoReserva
+}
+
+enum constants.TipoAnestesia {
+    LOCAL
+    GENERAL
+}
+
+enum constants.DiaSemana {
+    LUNES
+    MARTES
+    MIERCOLES
+    JUEVES
+    VIERNES
+    SABADO
+    DOMINGO
+}
+
+enum constants.EstadoReserva {
+    PENDIENTE
+    CONFIRMADA
+    REALIZADA
+    CANCELADA
+}
+
+' ============ Cirugías ============
+
+class Cirugia {
+    -id: Long
+    -fecha: Date
+    -horaInicio: Time
+    -horaFin: Time
+    -procedimiento: String
+    -tipo: TipoCirugia
+    -estado: EstadoCirugia
+}
+
+class CirujanoCirugia {
+    -id: Long
+    -rol: RolEquipoQuirurgico
+}
+
+class EstudioCirugia {
+    -id: Long
+    -necesario: Boolean
+    -realizado: Boolean
+    -fechaResultado: Date
+    -resultado: String
+}
+
+enum constants.TipoCirugia {
+    HOSPITALIZACION
+    AMBULATORIA
+}
+
+enum constants.EstadoCirugia {
+    PENDIENTE
+    EN_REVISION
+    PREPARACION
+    PROGRAMADA
+    CONFIRMADA
+    REALIZADA
+    CANCELADA
+}
+
+enum constants.RolEquipoQuirurgico {
+    PRINCIPAL
+    AYUDANTE
+    ANESTESIOLOGO
+    INSTRUMENTADOR
+}
+
+' ============ Seguimiento y alta ============
+
+class Evolucion {
+    -id: Long
+    -fecha: Date
+    -habitacion: String
+    -evolucion: String
+    -tratamientoPostquirurgico: String
+    -tratamientoBase: String
+}
+
+class Epicrisis {
+    -id: Long
+    -fecha: Date
+    -motivoIngreso: String
+    -procedimientos: String
+    -evolucion: String
+    -indicaciones: String
+    -estado: EstadoEpicrisis
+    -medicacion: String
+    -cuidados: String
+    -controles: String
+    -signosAlarma: String
+    -recomendaciones: String
+}
+
+class SeguimientoAmbulatorio {
+    -id: Long
+    -fechaVisita: Date
+    -comentario: String
+    -tratamiento: String
+    -proximoControl: Date
+}
+
+enum constants.EstadoEpicrisis {
+    BORRADOR_IA
+    VALIDADA
+}
+
+' ============ Relaciones ============
+
+Usuario "0..*" -- "1" Servicio
+Usuario "0..*" -- "1" Especialidad
+Usuario "0..*" -- "0..*" Permiso
+
+Paciente "0..*" -- "1" ObraSocial
+
+Ingreso "0..*" -- "1" Paciente
+Ingreso "0..*" -- "1" Servicio
+Ingreso "0..*" -- "1" Diagnostico
+Ingreso "0..*" -- "1" GradoUrgencia
+Ingreso "0..*" -- "1" Usuario : cirujano tratante
+
+Ingreso "0..1" -- "1" Cirugia : se programó como
+Cirugia "0..*" -- "1" Paciente
+Cirugia "0..*" -- "1" Diagnostico
+Cirugia "0..*" -- "1" GradoUrgencia
+
+CirujanoCirugia "0..*" -- "1" Cirugia
+CirujanoCirugia "0..*" -- "1" Usuario : cirujano
+
+Reserva "0..1" -- "1" Cirugia
+Reserva "0..*" -- "1" Quirofano
+Reserva "0..*" -- "1" Usuario : reservó
+
+AsignacionQuirofano "0..*" -- "1" Quirofano
+AsignacionQuirofano "0..*" -- "1" Servicio
+AsignacionQuirofano "0..*" -- "1" Especialidad
+
+EstudioCirugia "0..*" -- "1" Cirugia
+EstudioCirugia "0..*" -- "1" Estudio
+EstudioCirugia "0..*" -- "0..1" Usuario : validado por
+
+Evolucion "0..*" -- "1" Cirugia
+Evolucion "0..*" -- "1" Usuario : médico que registró
+
+Epicrisis "0..1" -- "1" Cirugia
+Epicrisis "0..*" -- "1" Usuario : médico que dio el alta
+Epicrisis "0..*" -- "0..1" Usuario : validada por
+
+SeguimientoAmbulatorio "0..*" -- "1" Cirugia
+SeguimientoAmbulatorio "0..*" -- "1" Usuario : médico
+
+note bottom of Paciente
+    Unicidad de registro: (dni + género)
+end note
+
+note top of Quirofano
+    El hospital tiene 5 quirófanos;
+    el sistema administra solo 4 (Q5 es de emergencias)
+end note
+
+@enduml
