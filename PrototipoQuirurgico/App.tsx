@@ -303,11 +303,11 @@ function NewAdmission() {
         <Input label="Fecha de registro" type="date" value="2025-09-30" />
         <Input label="Contacto" placeholder="Nombre y teléfono de contacto" />
         <Select label="Especialidad"><option>Cirugía General</option><option>Traumatología</option><option>Ginecología</option><option>Urología</option></Select>
-        <Select label="Diagnóstico"><option>Seleccionar diagnóstico</option><option>Colelitiasis sintomática</option><option>Hernia discal lumbar</option><option>Miomatosis uterina</option><option>Litiasis renal</option></Select>
+        <Textarea label="Diagnóstico" placeholder="Descripción del diagnóstico..."></Textarea>
         <Select label="Grado de urgencia"><option>Seleccionar urgencia</option><option>Emergencia</option><option>Urgente</option><option>Programado</option></Select>
         <Select label="Riesgo quirúrgico"><option>Seleccionar riesgo</option><option>ASA I</option><option>ASA II</option><option>ASA III</option><option>ASA IV</option></Select>
         <Select label="Cirujano tratante"><option>Dr. Martín Pérez</option><option>Dra. Lucía Ruiz</option><option>Dr. Pablo Romero</option></Select>
-        <Input label="Cirugía relacionada (opcional)" placeholder="Buscar cirugía" />
+        {/* <Input label="Cirugía relacionada (opcional)" placeholder="Buscar cirugía" /> */}
         <Textarea label="Descripción" placeholder="Motivo y detalle del ingreso..." />
         <Textarea label="Comentarios" placeholder="Observaciones adicionales..." />
       </div>
