@@ -108,6 +108,7 @@ const patients = [
 
 const navItems: { label: string; icon: IconName; path: string }[] = [
   { label: "Dashboard", icon: "grid", path: "/dashboard" },
+  { label: "Ingresos", icon: "clipboard", path: "/ingresos" },
   { label: "Pacientes", icon: "users", path: "/pacientes" },
   { label: "Cirugías", icon: "activity", path: "/cirugias" },
   { label: "Quirófanos", icon: "calendar", path: "/quirofanos" },
@@ -211,6 +212,7 @@ function Dashboard() {
       <SectionTitle title="Acciones rápidas" subtitle="Accesos directos a las tareas más frecuentes" />
       <div className="quick-grid">
         {[
+          ["clipboard", "Registrar ingreso", "Admitir un paciente", "/ingresos/nuevo"],
           ["plus", "Nuevo paciente", "Registrar datos personales", "/pacientes/nuevo"],
           ["search", "Buscar paciente", "Consultar ficha e historia", "/pacientes"],
           ["activity", "Lista de espera", "24 pacientes pendientes", "/pacientes/lista-espera"],
@@ -241,6 +243,77 @@ function Dashboard() {
       </div>
     </>
   );
+}
+
+const admissions = [
+  { date: "30/09/2025 · 07:45", patient: "María González", description: "Colecistectomía laparoscópica", service: "Cirugía General", urgency: "Alta", status: "En preparación" },
+  { date: "29/09/2025 · 16:20", patient: "Carlos Fernández", description: "Hernia discal lumbar", service: "Traumatología", urgency: "Media", status: "Pendiente de evaluación" },
+  { date: "29/09/2025 · 10:05", patient: "Laura Rodríguez", description: "Miomatosis uterina", service: "Ginecología", urgency: "Media", status: "Programado" },
+];
+
+function AdmissionsPage() {
+  return <>
+    <Crumb items={["Ingresos"]} />
+    <PageHeader title="Ingresos" subtitle="Registrá y consultá los ingresos de pacientes al circuito quirúrgico." actions={<Button icon="plus" onClick={() => navigate("/ingresos/nuevo")}>Registrar ingreso</Button>} />
+    <Card>
+      <SectionTitle title="Ingresos recientes" subtitle="Últimos pacientes incorporados al circuito quirúrgico." />
+      <Table headers={["Fecha de registro", "Paciente", "Descripción", "Especialidad", "Urgencia", "Estado", ""]} rows={admissions.map((entry) => [
+        entry.date,
+        <PatientLink name={entry.patient} />,
+        entry.description,
+        entry.service,
+        <Badge tone={entry.urgency === "Alta" ? "danger" : "warning"}>{entry.urgency}</Badge>,
+        <Badge tone="info">{entry.status}</Badge>,
+        <Button variant="ghost">Ver detalle <Icon name="arrow" size={14} /></Button>,
+      ])} />
+    </Card>
+  </>;
+}
+
+function NewAdmission() {
+  const [patientMode, setPatientMode] = useState<"search" | "new">("search");
+  const [patient, setPatient] = useState("María González");
+  const [saved, setSaved] = useState(false);
+
+  if (saved) {
+    return <>
+      <Crumb items={["Ingresos", "Nuevo ingreso"]} />
+      <Card className="success-panel">
+        <span className="success-check"><Icon name="check" size={24} /></span>
+        <div><div className="page-title">Ingreso registrado correctamente</div><p>El ingreso de {patient} fue incorporado al circuito quirúrgico.</p></div>
+        <div className="header-actions"><Button variant="secondary" onClick={() => navigate("/ingresos")}>Ver ingresos</Button><Button onClick={() => { setSaved(false); setPatientMode("search"); }}>Registrar otro ingreso</Button></div>
+      </Card>
+    </>;
+  }
+
+  return <>
+    <Crumb items={["Ingresos", "Nuevo ingreso"]} />
+    <PageHeader title="Registrar ingreso" subtitle="Buscá un paciente existente o cargá sus datos para continuar con el ingreso." />
+    <Card className="admission-step">
+      <SectionTitle title="1. Identificar paciente" subtitle="El ingreso debe quedar asociado a un paciente." action={<span className="section-number">01</span>} />
+      <div className="choice-tabs">
+        <button className={patientMode === "search" ? "choice active" : "choice"} onClick={() => setPatientMode("search")}><Icon name="search" /><span><strong>Paciente existente</strong><small>Buscar en el padrón</small></span></button>
+        <button className={patientMode === "new" ? "choice active" : "choice"} onClick={() => setPatientMode("new")}><Icon name="plus" /><span><strong>Nuevo paciente</strong><small>Cargar datos personales</small></span></button>
+      </div>
+      {patientMode === "search" ? <div className="patient-search-result"><Input label="Buscar por nombre, apellido o DNI" value={patient} onChange={setPatient} placeholder="Ej. María González" /><div className="selected-patient"><span className="patient-avatar blue">MG</span><div><strong>María González</strong><small>DNI 28.456.789 · 42 años · OSDE 210</small></div><Badge tone="success">Paciente encontrado</Badge></div></div> : <div className="form-grid"><Input label="Apellido" placeholder="Ej. González" /><Input label="Nombres" placeholder="Ej. María Elena" /><Input label="DNI" placeholder="00.000.000" /><Input label="Fecha de nacimiento" type="date" /><Input label="Teléfono" placeholder="+54 11 0000 0000" /><Select label="Obra social"><option>Seleccionar cobertura</option><option>OSDE</option><option>IOMA</option><option>PAMI</option></Select></div>}
+    </Card>
+    <Card className="admission-step">
+      <SectionTitle title="2. Datos del ingreso" subtitle="Completá la información clínica y administrativa de la admisión." action={<span className="section-number">02</span>} />
+      <div className="form-grid">
+        <Input label="Fecha de registro" type="date" value="2025-09-30" />
+        <Input label="Contacto" placeholder="Nombre y teléfono de contacto" />
+        <Select label="Especialidad"><option>Cirugía General</option><option>Traumatología</option><option>Ginecología</option><option>Urología</option></Select>
+        <Select label="Diagnóstico"><option>Seleccionar diagnóstico</option><option>Colelitiasis sintomática</option><option>Hernia discal lumbar</option><option>Miomatosis uterina</option><option>Litiasis renal</option></Select>
+        <Select label="Grado de urgencia"><option>Seleccionar urgencia</option><option>Emergencia</option><option>Urgente</option><option>Programado</option></Select>
+        <Select label="Riesgo quirúrgico"><option>Seleccionar riesgo</option><option>ASA I</option><option>ASA II</option><option>ASA III</option><option>ASA IV</option></Select>
+        <Select label="Cirujano tratante"><option>Dr. Martín Pérez</option><option>Dra. Lucía Ruiz</option><option>Dr. Pablo Romero</option></Select>
+        <Input label="Cirugía relacionada (opcional)" placeholder="Buscar cirugía" />
+        <Textarea label="Descripción" placeholder="Motivo y detalle del ingreso..." />
+        <Textarea label="Comentarios" placeholder="Observaciones adicionales..." />
+      </div>
+    </Card>
+    <div className="form-actions"><Button variant="secondary" onClick={() => navigate("/ingresos")}>Cancelar</Button><Button icon="check" onClick={() => setSaved(true)}>Registrar ingreso</Button></div>
+  </>;
 }
 
 function PatientLink({ name = "María González" }: { name?: string }) {
@@ -524,6 +597,8 @@ function NotFound() {
 
 function RouteContent({ path }: { path: string }) {
   if (path === "/dashboard" || path === "/") return <Dashboard />;
+  if (path === "/ingresos") return <AdmissionsPage />;
+  if (path === "/ingresos/nuevo") return <NewAdmission />;
   if (path === "/pacientes") return <PatientsPage />;
   if (path === "/pacientes/nuevo") return <PatientForm />;
   if (path === "/pacientes/lista-espera") return <PatientsPage waiting />;

@@ -120,6 +120,25 @@ kbd { font: inherit; font-size: 10px; border: 1px solid var(--line); background:
 .quick-card strong { font-size: 10px; margin-bottom: 4px; }
 .quick-card small { font-size: 8px; color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .quick-card svg:last-child { color: #9aabb3; }
+.admission-step { margin-bottom: 14px; }
+.choice-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+.choice { display: flex; align-items: center; gap: 11px; text-align: left; border: 1px solid var(--line); background: var(--surface); color: var(--ink-soft); border-radius: 8px; padding: 13px; cursor: pointer; }
+.choice:hover, .choice.active { border-color: var(--primary); background: var(--primary-soft); color: var(--primary-dark); }
+.choice svg { flex: none; }
+.choice span { display: block; }
+.choice strong, .choice small { display: block; }
+.choice strong { font-size: 11px; }
+.choice small { font-size: 9px; margin-top: 3px; color: var(--ink-soft); }
+.patient-search-result { max-width: 680px; }
+.selected-patient { display: flex; align-items: center; gap: 10px; padding: 12px; margin-top: 12px; border: 1px solid var(--line); border-radius: 8px; background: #fbfdfe; }
+.selected-patient > div { flex: 1; }
+.selected-patient strong, .selected-patient small { display: block; }
+.selected-patient strong { font-size: 11px; }
+.selected-patient small { font-size: 9px; color: var(--ink-soft); margin-top: 4px; }
+.success-panel { display: flex; align-items: center; gap: 15px; padding: 28px; }
+.success-panel > div:nth-child(2) { flex: 1; }
+.success-panel p { margin-bottom: 0; }
+.success-check { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; color: var(--green); background: var(--green-bg); }
 .dashboard-columns { display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(310px, .75fr); gap: 14px; }
 .table-wrap { overflow-x: auto; margin: 0 -20px; }
 table { width: 100%; border-collapse: collapse; font-size: 10px; }
@@ -284,4 +303,5 @@ tbody tr:hover { background: #fbfdfe; }
   .surgery-item { align-items: flex-start; flex-wrap: wrap; }.surgery-info { min-width: calc(100% - 80px); }.surgery-item > .btn { margin-left: 72px; }
   .spaced { align-items: stretch; flex-direction: column; }.spaced > div { display: grid; grid-template-columns: 1fr; }.permissions { grid-template-columns: 1fr; }.assignment { grid-template-columns: 65px 1fr; }.assignment > div:last-child { grid-column: 2; }
   .popover { right: 12px; width: calc(100vw - 44px); }.login-form-wrap { padding: 24px; }
+  .choice-tabs { grid-template-columns: 1fr; }.success-panel { align-items: flex-start; flex-direction: column; }.success-panel .header-actions { width: 100%; }
 }
